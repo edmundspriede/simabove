@@ -1,0 +1,46 @@
+<script>
+    
+    jQuery( document ).ready( function() {
+        
+        let $ = jQuery;
+        
+        $( document ).on( 'jet-form-builder/ajax/on-success', formHandle );
+
+        function formHandle( event, response, $form, data ) {
+            
+            if ( ! window.JetEngine ) {
+                return;
+            }
+    
+            let formId = $form.data('form-id');
+    
+            $( '.update-on-form-' + formId ).each( function() {
+                
+                let $listing = $( this ),
+                    nav   = $listing.find( '.jet-listing-grid__items' ).data( 'nav' ),
+        			query = nav.query;
+    	
+    			let args = {
+    				handler:'get_listing',
+    				container:$listing.find( '.elementor-widget-container' ),
+    				masonry:false,
+    				slider:false,
+    				append:false,
+    				query: query,
+    				widgetSettings: nav.widget_settings,
+    			};
+    	
+    			window.JetEngine.ajaxGetListing( args, function( response ) {
+    				let $container = $listing.children( '.elementor-widget-container' );
+    				$container.html( $( response.data.html ) );
+    				window.JetEngine.widgetListingGrid( $listing );
+    				window.JetEngine.initElementsHandlers( $container );
+    			});
+    			
+            } );
+            
+        }
+        
+    } );
+    
+</script>
