@@ -1,0 +1,1371 @@
+{
+  "name": "Simabove New Order",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://simabove.com/wp-json/wc/v3/orders/{{ $json.body.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "514a4f56-bebd-4483-955f-bd1c215bb9e2",
+      "name": "Woo Order",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1080,
+        800
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "spfnqIXVEh5Ld55S",
+          "name": "simabove woo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.esim-go.com/v2.3/orders",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "iOpwl4mcLgJDaKF75Z7EBdia1zCsFw53EIzM6UFy"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"type\":\"transaction\",\n  \"assign\":false,\n  \"Order\": [ {{ $json.concatenated_order }} ]\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "d5313f9c-4d09-4efc-b2af-bef30a1da701",
+      "name": "Esimgo Order",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2300,
+        1220
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.esim-go.com/v2.3//esims/apply",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "iOpwl4mcLgJDaKF75Z7EBdia1zCsFw53EIzM6UFy"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={  \"bundles\" : [{  \"name\" : \"{{ $json.item }}\" , \"startTime\" : \"\"}]\n \n\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "576afe6d-a5c1-40dc-91f9-adfa832effc1",
+      "name": "Esimgo Apply",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        3400,
+        820
+      ]
+    },
+    {
+      "parameters": {
+        "outputPrefix": "=file_"
+      },
+      "id": "79a8f27f-62f8-4318-bcfb-b25603c86976",
+      "name": "Compression",
+      "type": "n8n-nodes-base.compression",
+      "typeVersion": 1.1,
+      "position": [
+        3840,
+        820
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.esim-go.com/v2.3/esims/qr/{{ $json.body.applyReference }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "iOpwl4mcLgJDaKF75Z7EBdia1zCsFw53EIzM6UFy"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "183eed05-5ba1-4ab3-9e75-e3ef19b11d25",
+      "name": "Get QR",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        3620,
+        820
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body.line_items",
+        "options": {}
+      },
+      "id": "eb31cfa6-2a4f-493a-8d0d-434cf1af9ff5",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2100,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c8ef42b3-4c3e-4ccb-9339-f1dc179009ff",
+              "name": "quantity",
+              "value": "={{ $json.quantity }}",
+              "type": "number"
+            },
+            {
+              "id": "c39db9b1-53b8-45fc-a427-51e61bfb74d4",
+              "name": "item",
+              "value": "={{ $json.item }}",
+              "type": "string"
+            },
+            {
+              "id": "29c3b0d3-fcde-4294-83b0-fa40660e22bf",
+              "name": "type",
+              "value": "bundle",
+              "type": "string"
+            },
+            {
+              "id": "202ea73a-6836-491b-a66e-e435c4af2e45",
+              "name": "order",
+              "value": "={ \"type\" : \"bundle\" , \"quantity\" : {{ $json.quantity }}, \"item\" : \"{{ $json.item }}\" }",
+              "type": "string"
+            },
+            {
+              "id": "9c5be2b6-c05f-4f22-b1cd-bb27ebb73a69",
+              "name": "apply",
+              "value": "={  \"name\" : \"{{ $json.item }}\" , \"startTime\" : \"\"}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a14e5f16-0fdf-4b04-bc9b-51f3054793cf",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        1680,
+        1220
+      ]
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "concatenate",
+              "field": "order"
+            },
+            {
+              "aggregation": "concatenate",
+              "field": "apply"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4c99be3b-1bd1-4ea3-82f1-4ca702f48165",
+      "name": "Summarize",
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1,
+      "position": [
+        1980,
+        1220
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body.order",
+        "options": {}
+      },
+      "id": "6ce071b9-0318-4b1b-84d1-cdb1267f5ea1",
+      "name": "Split Out1",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2920,
+        1220
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://simabove.com/wp-json/wp/v2/esims/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\n{\n   \"status\" : \"publish\",\n   \"title\" : \"{{  $('Esimgo Apply').item.json[\"body\"][\"esims\"][0][\"iccid\"] }}\",\n   \"author\": {{ $if( $('Woo Order').item.json[\"body\"][\"customer_id\"] == 0 , 26 ,  $('Woo Order').item.json[\"body\"][\"customer_id\"] ) }},\n   \"meta\":  {\n               \"iccid\": \"{{  $('Esimgo Apply').item.json[\"body\"][\"esims\"][0][\"iccid\"] }}\",\n                \"bundles\": \"{{ $('Split Out1').item.json.item }}\",\n                \"qr\" : \"{{ $json.qr }}\",\n                \"orderid\": \"{{ $('Woo Order').item.json[\"body\"][\"id\"] }}\",\n                \"provider\" : \"Esimgo\"\n   }\n}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "d543154a-ee01-4617-b69c-3cbac0671029",
+      "name": "NEW Esims",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        3600,
+        1220
+      ],
+      "executeOnce": false,
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "dhUhRukAVAYsGVvs",
+          "name": "Simabove WP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "5eabd7a3-b7cc-4a64-b0e1-c3880d5aeb92",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 400,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9cabd399-e97f-409b-8446-6964d741b142",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        1220
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "binaryPropertyName": "file_0",
+        "destinationKey": "qr",
+        "options": {
+          "encoding": "utf8"
+        }
+      },
+      "id": "0b92e43f-ae7a-461d-b058-fb87e20558bf",
+      "name": "Extract From File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        3300,
+        1220
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "var bundles = [];\n\n\nconsole.log($('Split Out').item.json.quantity);\n\nfor  ( let i = 1 ; i <= $('Split Out').item.json.quantity ; i++)  {\n\n\n       b = {\"quantity\" : 1 , \"item\" : $input.item.json.body.sku , \"type\" : \"bundle\" , \"starttime\" : \"\", \"name\" : $input.item.json.body.name};\n\n       bundles.push( b );\n  \n}\n\n$input.item.json.bundles = bundles;\n\n\nreturn $input.item;"
+      },
+      "id": "4b2b22aa-b46e-4f6e-af09-3c9bf537bbb7",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2580,
+        780
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "cd8d7a00-35a4-4c4d-88ed-dbe3c7beece8",
+      "name": "When clicking \"Test workflow\"",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        900,
+        1140
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "=https://simabove.com/wp-json/wc/v3/products/{{ $json.product_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "d776d806-1b8b-4c7b-a4df-06cb5b0b8d9d",
+      "name": "Get SKU",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2340,
+        780
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "spfnqIXVEh5Ld55S",
+          "name": "simabove woo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "bundles",
+        "options": {}
+      },
+      "id": "8083bd75-c395-476e-8f45-c384a2528cde",
+      "name": "Split Out2",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2820,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "d2c8c6b4-19c5-43ce-b125-712662f3b75e",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        3160,
+        820
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.esim-go.com/v2.3/esims/{{ $('Esimgo Apply').item.json.body.esims[0].iccid }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "iOpwl4mcLgJDaKF75Z7EBdia1zCsFw53EIzM6UFy"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "47dc265c-c59b-47d2-a384-baba211e5a06",
+      "name": "Esimgo Esim details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        3860,
+        1220
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://simabove.com/wp-json/wp/v2/esims/{{ $('NEW Esims').item.json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\n{\n   \"status\" : \"publish\",\n   \n   \"meta\":  {\n                \"pin\": \"{{ $('Esimgo Esim details').item.json.body.pin }}\",\n                \"puk\": \"{{ $('Esimgo Esim details').item.json.body.puk }}\",\n                \"profilestatus\": \"{{ $('Esimgo Esim details').item.json.body.profileStatus }}\",\n                \"smdpaddress\" : \"{{ $('Esimgo Esim details').item.json.body.smdpAddress }}\" ,\n                \"matchingid\": \"{{ $('Esimgo Esim details').item.json.body.matchingId }}\" ,\n                \"apple-link\" : \"https://esimsetup.apple.com/esim_qrcode_provisioning?carddata=LPA:1${{ $('Esimgo Esim details').item.json.body.smdpAddress }}${{ $('Esimgo Esim details').item.json.body.matchingId }}\",\n                \"android-link\":  \"LPA:1${{ $('Esimgo Esim details').item.json.body.smdpAddress }}${{ $('Esimgo Esim details').item.json.body.matchingId }}\"\n\n              \n   }\n}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "9463c25d-bcae-49fb-abdf-3d8ebab335f6",
+      "name": "Update Esim",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        4100,
+        1220
+      ],
+      "executeOnce": false,
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "dhUhRukAVAYsGVvs",
+          "name": "Simabove WP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://simabove.com/wp-json/wp/v2/bundles/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\n{\n   \"status\" : \"publish\",\n   \"title\" : \" {{ $('Get SKU1').item.json.body[0].name }}\",\n   \"author\": {{ $('Woo Order').item.json[\"body\"][\"customer_id\"] }},\n   \"meta\":  {\n                \"bundle\": \" {{ $('Get SKU1').item.json.body[0].name }}\",\n                \"sku\": \"{{ $('Loop Over Items').item.json.item }}\",\n                \"start-time\": \"{{  Math.floor(Date.now() / 1000) }}\",\n                \"data-initial\" : \"{{ $json.value * 1000 }}\",\n                \"data-remaining\" :  \"{{ $json.value * 1000 }}\",\n                \"orderid\": \"{{ $('Woo Order').item.json[\"body\"][\"id\"] }}\",\n                \"iccid\" : \"{{ $('Esimgo Apply').item.json[\"body\"][\"esims\"][0][\"iccid\"] }}\",\n                \"assignmentid\" : \"{{ $('Esimgo Apply').item.json[\"body\"][\"applyReference\"] }}\",\n                \"bundle-state\" : \"queued\"\n   }\n}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "74550e1b-eb34-4696-ba89-38d136b8fe62",
+      "name": "NEW Bundle",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        4140,
+        1520
+      ],
+      "executeOnce": false,
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "dhUhRukAVAYsGVvs",
+          "name": "Simabove WP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://simabove.com/wp-json/wc/v3/products/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "sku",
+              "value": "={{ $('Loop Over Items').item.json.item }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "d5c85b06-8186-4a46-a55f-1d4d5128c307",
+      "name": "Get SKU1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        3300,
+        1520
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "spfnqIXVEh5Ld55S",
+          "name": "simabove woo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://simabove.com/wp-json/jet-rel/22",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\n{\n\t\"parent_id\" : \"{{ $('NEW Esims').item.json.id }}\",\n \t\"child_id\":  \"{{ $('NEW Bundle').item.json.id }}\",\n\t\"context\" : \"child\",\n\t\"store_items_type\" : \"update\"\n}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "c0c2b703-27ed-473a-b0b8-d567fd82361c",
+      "name": "Bundle relation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        4320,
+        1520
+      ],
+      "executeOnce": false,
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "dhUhRukAVAYsGVvs",
+          "name": "Simabove WP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7bbb85af-1c67-4527-83a8-be90ce2d81b4",
+              "name": "orderid",
+              "value": "={{ $('Woo Order').item.json.body.id }}",
+              "type": "string"
+            },
+            {
+              "id": "f624105e-5fdd-48bf-ad68-13cd9701f4ab",
+              "name": "customeremail",
+              "value": "={{ $('Woo Order').item.json.body.billing.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e1f34327-9df9-45df-9b69-bf9ea104a67c",
+      "name": "Edit Fields1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        3340,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "8e03dc31-c199-4ba8-8134-fae9c185c24b",
+              "leftValue": "={{ $json.body.status }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "c61504a3-4231-461c-a8a3-ad12a8e3886c",
+              "leftValue": "={{ $json.body.status }}",
+              "rightValue": "processing",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "0ce08e07-f1c4-453b-8b18-e553431be877",
+      "name": "If1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "Invalid order"
+      },
+      "id": "1078b461-920d-49a9-bae6-8202c9cc1f9b",
+      "name": "Stop and Error",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1940,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body[0].meta_data",
+        "options": {}
+      },
+      "id": "ae0dfaf3-6cbf-4c95-a29b-2b1935810b7d",
+      "name": "Split Out3",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        3520,
+        1520
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "2fbcbd19-dfda-431e-8103-90832978040a",
+              "leftValue": "={{ $json.key  }}",
+              "rightValue": "data-amount",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "171fa4aa-1789-47cd-9a11-8ce3b5b3f135",
+      "name": "Filter",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        3740,
+        1520
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "8e03dc31-c199-4ba8-8134-fae9c185c24b",
+              "leftValue": "={{ $json.body.billing.city}}",
+              "rightValue": "testing",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "561ee68b-e160-4823-8b69-f8d3d3eda10c",
+      "name": "If2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": "CH44wpllGMRccLxn",
+        "options": {}
+      },
+      "id": "667af2b9-07b2-4806-b7a5-24ef9929abb1",
+      "name": "Execute Workflow2",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        3980,
+        620
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "workflowId": "9N14SyjGE4UtNplV",
+        "options": {}
+      },
+      "id": "45249f1a-bd96-46e5-a37b-d9e9a259b1a7",
+      "name": "Execute Workflow1",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        1480,
+        480
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "sendTo": "elvis@autoaha.lv",
+        "subject": "Problem in workflow",
+        "message": "={{ $('Esimgo Order').item.json.body.message }}",
+        "options": {}
+      },
+      "id": "d0e7028c-323b-4979-a176-7da10261b9b1",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2940,
+        600
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "P1sDJ9LVnzfb8Wpz",
+          "name": "Simabove Gmail"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "= https://simabove.com/wp-json/wc/v3/orders/{{ $('Woo Order').item.json.body.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \n   \"meta_data\" : [{\n           \"key\"  :  \"invoiced\"  ,\n           \"value\" : \"true\"\n       }]\n\n }",
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "442058f4-daf0-4697-8654-b6212a6d3498",
+      "name": "Invoiced Order",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        3600,
+        360
+      ],
+      "notesInFlow": true,
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "spfnqIXVEh5Ld55S",
+          "name": "simabove woo"
+        }
+      },
+      "notes": "READ ORDER"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c7f2fd48-b5f7-43ea-b641-29e62e24e898",
+              "name": "invoiced",
+              "value": "={{ $jmespath($('Woo Order').item.json.body.meta_data , \"[?key == 'invoiced'].value\") }}",
+              "type": "array"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "71dce289-a461-4d02-a12f-5f98c16ad214",
+      "name": "Invoiced",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        1260,
+        1020
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "c61504a3-4231-461c-a8a3-ad12a8e3886c",
+              "leftValue": "={{ $json.invoiced[0] }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "d4eae1db-63b8-45f2-b86c-fca7c0b39e58",
+              "leftValue": "={{ $json.invoiced }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "d60a3bde-7655-46de-8476-19c09e5ee217",
+      "name": "Invoiced1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1860,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "070301c8-e36d-49d9-804e-9db84ec74781",
+        "options": {}
+      },
+      "id": "154b4214-9f04-48cc-bfee-0decbde62dae",
+      "name": "Webhook1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        820,
+        380
+      ],
+      "webhookId": "070301c8-e36d-49d9-804e-9db84ec74781"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "f64dddcb-2340-426c-9be0-2848d6242608",
+              "leftValue": "={{ $json.body.origin }}",
+              "rightValue": "functions",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "65eb0cd4-9020-44dc-a17a-9c3614e62c97",
+      "name": "If3",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        560
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "a5f41d39-0cfc-4f12-9142-7a2369abb230",
+      "name": "No Operation, do nothing",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Add a new field called 'myNewField' to the JSON of the item\nif ($input.item.json.value == -1) $input.item.json.value = 1 ;\n\nreturn $input.item;"
+      },
+      "id": "b6ed2243-b4ca-4c65-9e2f-588237c73082",
+      "name": "Code1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3940,
+        1520
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Woo Order": {
+      "main": [
+        [
+          {
+            "node": "Invoiced",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esimgo Order": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esimgo Apply": {
+      "main": [
+        [
+          {
+            "node": "Get QR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compression": {
+      "main": [
+        [
+          {
+            "node": "Extract From File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get QR": {
+      "main": [
+        [
+          {
+            "node": "Compression",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Get SKU",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Esimgo Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NEW Esims": {
+      "main": [
+        [
+          {
+            "node": "Esimgo Esim details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract From File": {
+      "main": [
+        [
+          {
+            "node": "NEW Esims",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking \"Test workflow\"": {
+      "main": [
+        [
+          {
+            "node": "Woo Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get SKU": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Esimgo Apply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esimgo Esim details": {
+      "main": [
+        [
+          {
+            "node": "Update Esim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Esim": {
+      "main": [
+        [
+          {
+            "node": "Get SKU1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NEW Bundle": {
+      "main": [
+        [
+          {
+            "node": "Bundle relation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get SKU1": {
+      "main": [
+        [
+          {
+            "node": "Split Out3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bundle relation": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Invoiced Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Invoiced1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out3": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Invoiced": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Invoiced1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Woo Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "NEW Bundle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "90097e5b-0bac-4939-b238-c4b9a6df5344",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0f064bae8ef402bc77bc2dfa9bf8ed7b60d49005d687ffae7941232c8a9d8d44"
+  },
+  "id": "t46SSBvg7BQZb4sB",
+  "tags": [
+    {
+      "createdAt": "2024-03-13T16:37:02.409Z",
+      "updatedAt": "2024-03-13T16:37:02.409Z",
+      "id": "3AGABLsNhFyI7lhk",
+      "name": "esimgo"
+    }
+  ]
+}
