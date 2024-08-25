@@ -466,7 +466,7 @@
         "genericAuthType": "httpBasicAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "=\n{\n   \"status\" : \"publish\",\n   \"title\" : \" {{ $('Get SKU1').item.json.body[0].name }}\",\n   \"author\": {{ $('Woo Order').item.json[\"body\"][\"customer_id\"] }},\n   \"meta\":  {\n                \"bundle\": \" {{ $('Get SKU1').item.json.body[0].name }}\",\n                \"sku\": \"{{ $('Loop Over Items').item.json.item }}\",\n                \"start-time\": \"{{  Math.floor(Date.now() / 1000) }}\",\n                \"data-initial\" : \"{{ $json.value * 1000 }}\",\n                \"data-remaining\" :  \"{{ $json.value * 1000 }}\",\n                \"orderid\": \"{{ $('Woo Order').item.json[\"body\"][\"id\"] }}\",\n                \"iccid\" : \"{{ $('Esimgo Apply').item.json[\"body\"][\"esims\"][0][\"iccid\"] }}\",\n                \"assignmentid\" : \"{{ $('Esimgo Apply').item.json[\"body\"][\"applyReference\"] }}\",\n                \"bundle-state\" : \"queued\"\n   }\n}",
+        "jsonBody": "=\n{\n   \"status\" : \"publish\",\n   \"title\" : \" {{ $('Get SKU1').item.json.body[0].name }}\",\n   \"author\": {{ $if( $('Woo Order').item.json[\"body\"][\"customer_id\"] == 0 , 26 ,  $('Woo Order').item.json[\"body\"][\"customer_id\"] ) }},\n   \"meta\":  {\n                \"bundle\": \" {{ $('Get SKU1').item.json.body[0].name }}\",\n                \"sku\": \"{{ $('Loop Over Items').item.json.item }}\",\n                \"start-time\": \"{{  Math.floor(Date.now() / 1000) }}\",\n                \"data-initial\" : \"{{ $json.value * 1000 }}\",\n                \"data-remaining\" :  \"{{ $json.value * 1000 }}\",\n                \"orderid\": \"{{ $('Woo Order').item.json[\"body\"][\"id\"] }}\",\n                \"iccid\" : \"{{ $('Esimgo Apply').item.json[\"body\"][\"esims\"][0][\"iccid\"] }}\",\n                \"assignmentid\" : \"{{ $('Esimgo Apply').item.json[\"body\"][\"applyReference\"] }}\",\n                \"bundle-state\" : \"queued\"\n   }\n}",
         "options": {
           "allowUnauthorizedCerts": true
         }
@@ -1354,7 +1354,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "90097e5b-0bac-4939-b238-c4b9a6df5344",
+  "versionId": "b5a61ec1-7484-4a6a-b452-03e6137047cc",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "0f064bae8ef402bc77bc2dfa9bf8ed7b60d49005d687ffae7941232c8a9d8d44"
