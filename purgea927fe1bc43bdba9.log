@@ -42,3 +42,14 @@
 02/03/25 10:19:18.694 [45.80.184.51:5804 1 XS0] LSCACHE_VARY_COOKIE: ,wp-postpass_bbc325198b001799e9ad8598fa5b6fe5,woocommerce_cart_hash
 02/03/25 10:19:18.694 [45.80.184.51:5804 1 XS0] X-LiteSpeed-Purge: public,stale,185_WC_T.391,185_WC_T.1173,185_WC_T.1170,185_Po.110509,185_,185_W.recent-posts-1,185_FD => LiteSpeed\LSC->send_headers()@624 => WP_Hook->apply_filters(ARRAY)@324 => WP_Hook->do_action(ARRAY)@348 => 
 /home/runcloud/webapps/simabove/wp-includes/load.php@517
+
+02/03/25 14:49:54.318 [104.28.31.30:18808 1 n8Q] 💓 ------POST HTTP/1.1 (HTTPS)  /lv/
+02/03/25 14:49:54.318 [104.28.31.30:18808 1 n8Q] Query String: wc-ajax=checkout
+02/03/25 14:49:54.318 [104.28.31.30:18808 1 n8Q] HTTP_REFERER: https://simabove.com/lv/noformesana/
+02/03/25 14:49:54.318 [104.28.31.30:18808 1 n8Q] User Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X...
+02/03/25 14:49:54.318 [104.28.31.30:18808 1 n8Q] Accept: application/json, text/javascript, */*; q=0.01
+02/03/25 14:49:54.318 [104.28.31.30:18808 1 n8Q] Accept Encoding: gzip, deflate, br
+02/03/25 14:49:54.318 [104.28.31.30:18808 1 n8Q] X-LSCACHE: true
+02/03/25 14:49:54.319 [104.28.31.30:18808 1 n8Q] X-LiteSpeed-Purge: public,stale,185_FD => LiteSpeed\LSC->send_headers()@624 => WP_Hook->apply_filters(ARRAY)@324 => WP_Hook->do_action(ARRAY)@348 =>
+/home/runcloud/webapps/simabove/wp-includes/load.php@517
+
