@@ -53,3 +53,31 @@
 02/03/25 14:49:54.319 [104.28.31.30:18808 1 n8Q] X-LiteSpeed-Purge: public,stale,185_FD => LiteSpeed\LSC->send_headers()@624 => WP_Hook->apply_filters(ARRAY)@324 => WP_Hook->do_action(ARRAY)@348 =>
 /home/runcloud/webapps/simabove/wp-includes/load.php@517
 
+02/05/25 06:44:57.508 [185.214.96.126:61724 1 Dg4] 💓 ------POST HTTP/1.1 (HTTPS)  /wp-admin/admin-ajax.php
+02/05/25 06:44:57.508 [185.214.96.126:61724 1 Dg4] Query String:
+02/05/25 06:44:57.508 [185.214.96.126:61724 1 Dg4] HTTP_REFERER: https://simabove.com/wp-admin/edit.php?orderby=title&...
+02/05/25 06:44:57.508 [185.214.96.126:61724 1 Dg4] User Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Apple...
+02/05/25 06:44:57.508 [185.214.96.126:61724 1 Dg4] Accept: text/html, */*; q=0.01
+02/05/25 06:44:57.508 [185.214.96.126:61724 1 Dg4] Accept Encoding: gzip, deflate, br, zstd
+02/05/25 06:44:57.508 [185.214.96.126:61724 1 Dg4] Cookie _lscache_vary: admin_bar:1;logged-in:1;role:99;role_exclude_cache:1
+02/05/25 06:44:57.508 [185.214.96.126:61724 1 Dg4] X-LSCACHE: true
+02/05/25 06:44:57.508 [185.214.96.126:61724 1 Dg4] LSCACHE_VARY_COOKIE: ,wp-postpass_bbc325198b001799e9ad8598fa5b6fe5,woocommerce_cart_hash
+02/05/25 06:44:57.508 [185.214.96.126:61724 1 Dg4] X-LiteSpeed-Purge: public,stale,185_WC_T.391,185_WC_T.1173,185_WC_T.1170,185_Po.110798,185_,185_W.recent-posts-1,185_FD => LiteSpeed\LSC->send_headers()@624 => WP_Hook->apply_filters(ARRAY)@324 => WP_Hook->do_action(ARRAY)@348 =>
+/home/runcloud/webapps/simabove/wp-includes/load.php@517
+
+
+
+
+02/05/25 06:46:14.684 [185.214.96.126:44260 1 tpE] 💓 ------POST HTTP/1.1 (HTTPS)  /wp-admin/admin-ajax.php
+02/05/25 06:46:14.684 [185.214.96.126:44260 1 tpE] Query String:
+02/05/25 06:46:14.684 [185.214.96.126:44260 1 tpE] HTTP_REFERER: https://simabove.com/wp-admin/edit.php?orderby=title&...
+02/05/25 06:46:14.684 [185.214.96.126:44260 1 tpE] User Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Apple...
+02/05/25 06:46:14.684 [185.214.96.126:44260 1 tpE] Accept: text/html, */*; q=0.01
+02/05/25 06:46:14.684 [185.214.96.126:44260 1 tpE] Accept Encoding: gzip, deflate, br, zstd
+02/05/25 06:46:14.684 [185.214.96.126:44260 1 tpE] Cookie _lscache_vary: admin_bar:1;logged-in:1;role:99;role_exclude_cache:1
+02/05/25 06:46:14.684 [185.214.96.126:44260 1 tpE] X-LSCACHE: true
+02/05/25 06:46:14.684 [185.214.96.126:44260 1 tpE] LSCACHE_VARY_COOKIE: ,wp-postpass_bbc325198b001799e9ad8598fa5b6fe5,woocommerce_cart_hash
+02/05/25 06:46:14.684 [185.214.96.126:44260 1 tpE] X-LiteSpeed-Purge: public,stale,185_WC_T.391,185_WC_T.1173,185_WC_T.1170,185_Po.111398,185_,185_W.recent-posts-1,185_FD => LiteSpeed\LSC->send_headers()@624 => WP_Hook->apply_filters(ARRAY)@324 => WP_Hook->do_action(ARRAY)@348 =>
+/home/runcloud/webapps/simabove/wp-includes/load.php@517
+
+
