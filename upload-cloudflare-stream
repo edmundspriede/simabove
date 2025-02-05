@@ -1,0 +1,73 @@
+const { NodeApiError } = require("n8n-workflow");
+const fs = require("fs");
+const FormData = require("form-data");
+
+module.exports = {
+  displayName: "Upload to Cloudflare Stream",
+  name: "uploadToCloudflareStream",
+  group: ["transform"],
+  version: 1,
+  description: "Uploads a file to Cloudflare Stream",
+  defaults: {
+    name: "Upload to Cloudflare Stream",
+    color: "#ff9900",
+  },
+  inputs: ["main"],
+  outputs: ["main"],
+  properties: [
+    {
+      displayName: "Account ID",
+      name: "accountId",
+      type: "string",
+      default: "",
+      required: true,
+      description: "Your Cloudflare Account ID",
+    },
+     {
+      displayName: "Bearer Token",
+      name: "token",
+      type: "string",
+      default: "",
+      required: true,
+      description: "Your Cloudflare Token",
+    }
+    {
+      displayName: "Video File Path",
+      name: "videoFilePath",
+      type: "string",
+      default: "",
+      required: true,
+      description: "The file path of the video to upload",
+    },
+  ],
+  async execute() {
+    const items = this.getInputData();
+    const returnData = [];
+    const accountId = this.getNodeParameter("accountId", 0);
+    const token = this.getNodeParameter("token", 0);
+
+    const videoFilePath = this.getNodeParameter("videoFilePath", 0);
+
+    for (let i = 0; i < items.length; i++) {
+      try {
+        const formData = new FormData();
+        formData.append("file", fs.createReadStream(videoFilePath));
+
+        const response = await this.helpers.request({
+          method: "POST",
+          url: `https://api.cloudflare.com/client/v4/accounts/${accountId}/stream`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            ...formData.getHeaders(),
+          },
+          body: formData,
+        });
+
+        returnData.push(response.result);
+      } catch (error) {
+        throw new NodeApiError(this.getNode(), error);
+      }
+    }
+    return this.prepareOutputData(returnData);
+  },
+};
